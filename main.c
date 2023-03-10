@@ -18,15 +18,18 @@ char* returns_free_symbol(int value);
 bool check_atomic(char* word);
 void evaluate_atomics(char** words, int size, char** atomics);
 void print_sentence(char** words, int size);
-
+void print_atomics(char** atomics);
 
 
 int main(void)
 {
     char *words[MAX_WORDS]; // inicia um array de ponteiros pra strings
 
-    char string[MAX_WORD_SIZE * MAX_WORDS] = "Se não fizer sol e for domingo, então vou a praia, e se fizer chuva então ficarei em casa";
+    char *string = malloc(MAX_WORD_SIZE * MAX_WORDS * sizeof(char));
+    //char string[MAX_WORD_SIZE * MAX_WORDS] = 
+    //"Se fizer sol e for domingo, então vou a praia, e se fizer chuva então ficarei em casa";
     
+    fgets(string, MAX_WORD_SIZE * MAX_WORDS * sizeof(char), stdin);
     int size = split_string(string, words);
     
     evaluate_operators(words, size);
@@ -35,13 +38,14 @@ int main(void)
 
     evaluate_atomics(words, size, atomics);
     
-    for(int i = 0; i < size; i++)
-    {
-        printf("%s ", words[i]);
-    }
-    printf("\n");
+    //for(int i = 0; i < size; i++)
+    //{
+    //    printf("%s ", words[i]);
+    //}
+    //printf("\n");
 
     print_sentence(words, size);
+    print_atomics(atomics);
 }
 
 // functions that splits a string in words, and add each word inside a array of strings
@@ -113,14 +117,14 @@ void evaluate_operators(char** words, int size)
         {
             if(i != 0)
             {
-                if(strcasecmp(words[i-1], "somente") == 0)
+                if(strcasecmp(words[i + 1], "e") == 0 && strcasecmp(words[i + 2], "somente") == 0)
                 {
-                    strcpy(words[i], "<->");
+                    strcpy(words[i + 1], "<->");
                 }
-            }
-            else if(strcasecmp(words[i + 1], "e") == 0 && strcasecmp(words[i], "somente") == 0)
-            {
-                strcpy(words[i], "<->");
+                else if(strcasecmp(words[i-1], "somente") == 0)
+                {
+                    strcpy(words[i - 1], "<->");
+                }
             }
         }
     }
@@ -156,7 +160,7 @@ void evaluate_atomics(char** words, int size, char** atomics)
                                     // tendo em vista que eles vão estar numa só string
                     }
                 }
-                printf("%s\n", atomic);
+                //printf("%s\n", atomic);
             
 
                 atomics[check_free_symbol(atomics)] = atomic; // atribui o ponteiro da string concatenada na posição mais anterior
@@ -188,7 +192,7 @@ void evaluate_atomics(char** words, int size, char** atomics)
                 }
 
             }
-            printf("%s\n", atomic);
+            //printf("%s\n", atomic);
 
             atomics[check_free_symbol(atomics)] = atomic; // atribui o ponteiro da string concatenada na posição mais anterior
             words[j - 1] = returns_free_symbol(check_free_symbol(atomics)); // atribui um simbolo 
@@ -227,25 +231,25 @@ char* returns_free_symbol(int value)
 {
     switch (value)
     {
-        case 0:
-            return "symbol_M";
         case 1:
-            return "symbol_N";
+            return "symbol_M";
         case 2:
-            return "symbol_O";
+            return "symbol_N";
         case 3:
-            return "symbol_P";
+            return "symbol_O";
         case 4:
-            return "symbol_Q";
+            return "symbol_P";
         case 5:
-            return "symbol_R";
+            return "symbol_Q";
         case 6:
-            return "symbol_S";
+            return "symbol_R";
         case 7:
-            return "symbol_U";
+            return "symbol_S";
         case 8:
-            return "symbol_V";
+            return "symbol_U";
         case 9:
+            return "symbol_V";
+        case 10:
             return "symbol_Z";
     }
 }
@@ -253,6 +257,7 @@ char* returns_free_symbol(int value)
 bool check_atomic(char* word)
 {
     if(
+    strcasecmp(word, "symbol_M") == 0 ||
     strcasecmp(word, "symbol_N") == 0 ||
     strcasecmp(word, "symbol_O") == 0 ||
     strcasecmp(word, "symbol_P") == 0 ||
@@ -281,5 +286,17 @@ void print_sentence(char** words, int size)
         {
             printf("%c ", words[i][7]);
         }
+    }
+    printf("\n");
+}
+
+void print_atomics(char** atomics)
+{
+    int i = 0;  
+
+    while((strcmp(atomics[i], "") != 0) || i > MAX_ATOMICS)
+    {
+        printf("%c: %s\n", returns_free_symbol(i + 1)[7], atomics[i]);
+        i++;
     }
 }
