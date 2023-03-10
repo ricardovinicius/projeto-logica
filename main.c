@@ -29,6 +29,8 @@ int main(void)
     //char string[MAX_WORD_SIZE * MAX_WORDS] = 
     //"Se fizer sol e for domingo, então vou a praia, e se fizer chuva então ficarei em casa";
     
+    printf("Escreva a frase: \n");
+
     fgets(string, MAX_WORD_SIZE * MAX_WORDS * sizeof(char), stdin);
     int size = split_string(string, words);
     
